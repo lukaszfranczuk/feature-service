@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: features-service
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        enable_lazy_load_no_trans: true
+  h2:
+    console:
+      enabled: true
+  liquibase:
+    change-log: db/changelog/db.changelog-master.yaml
+
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: true
+
+jwt:
+  config:
+    expirationTime: 1200000
+    secret: 3bJAp`]4|kzB?~8+3bJAp`]4|kzB?~8+

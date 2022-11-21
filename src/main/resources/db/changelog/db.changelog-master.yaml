@@ -1,0 +1,219 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Lukasz Franczuk
+      changes:
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: role_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: app_user
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: guid
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: app_user
+            columnNames: username
+            constraintName: unique_user_username
+            validate: true
+        - addUniqueConstraint:
+            tableName: app_user
+            columnNames: guid
+            constraintName: unique_user_guid
+            validate: true
+        - createTable:
+            tableName: user_role
+            columns:
+              - column:
+                  name: user_role_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: user_role
+            baseColumnNames: user_id
+            constraintName: fk_user_role_user
+            referencedTableName: app_user
+            referencedColumnNames: user_id
+            validate: true
+        - addForeignKeyConstraint:
+            baseTableName: user_role
+            baseColumnNames: role_id
+            constraintName: fk_user_role_role
+            referencedTableName: role
+            referencedColumnNames: role_id
+            validate: true
+        - createTable:
+            tableName: feature
+            columns:
+              - column:
+                  name: feature_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: guid
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: globally_enabled
+                  type: boolean
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: feature
+            columnNames: guid
+            constraintName: unique_feature_guid
+            validate: true
+        - addUniqueConstraint:
+            tableName: feature
+            columnNames: name
+            constraintName: unique_feature_name
+            validate: true
+        - createTable:
+            tableName: user_feature
+            columns:
+              - column:
+                  name: user_feature_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: feature_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: user_feature
+            baseColumnNames: user_id
+            constraintName: fk_user_feature_user
+            referencedTableName: app_user
+            referencedColumnNames: user_id
+            validate: true
+        - addForeignKeyConstraint:
+            baseTableName: user_feature
+            baseColumnNames: feature_id
+            constraintName: fk_user_feature_feature
+            referencedTableName: feature
+            referencedColumnNames: feature_id
+            validate: true
+
+        #   INSERT
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: name
+                  value: ROLE_USER
+            dbms: 'h2'
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: name
+                  value: ROLE_ADMIN
+            dbms: 'h2'
+        - insert:
+            tableName: app_user
+            columns:
+              - column:
+                  name: guid
+                  value: 0c0136e7-e145-4a5b-a8e4-0841244f997f
+              - column:
+                  name: username
+                  value: normal_user
+              - column:
+                  name: password
+                  value: $2a$12$2OZR4ulSEJQwX5NoDmFXo.RnyquV5NLUcMQ2vchf845gNBOLQbNJu
+            dbms: 'h2'
+        - insert:
+            tableName: app_user
+            columns:
+              - column:
+                  name: guid
+                  value: 12a8a3d1-a35d-46c5-9361-415d7e6011d4
+              - column:
+                  name: username
+                  value: normal_user2
+              - column:
+                  name: password
+                  value: $2a$12$2OZR4ulSEJQwX5NoDmFXo.RnyquV5NLUcMQ2vchf845gNBOLQbNJu
+            dbms: 'h2'
+        - insert:
+            tableName: app_user
+            columns:
+              - column:
+                  name: guid
+                  value: 0d00038c-f3b0-4fd4-9e99-3bd454740d15
+              - column:
+                  name: username
+                  value: admin_user
+              - column:
+                  name: password
+                  value: $2a$12$qtERp3INdSF61msm5hcI9OcVpEObMmmjdRJVI57b.ZkPLcyqsLh1u
+            dbms: 'h2'
+        - sql:
+            dbms: 'h2'
+            sql: INSERT INTO user_role (user_id, role_id) VALUES ((SELECT u.user_id FROM app_user u WHERE u.username = 'normal_user'),(SELECT r.role_id FROM role r WHERE r.name = 'ROLE_USER'))
+        - sql:
+            dbms: 'h2'
+            sql: INSERT INTO user_role (user_id, role_id) VALUES ((SELECT u.user_id FROM app_user u WHERE u.username = 'admin_user'),(SELECT r.role_id FROM role r WHERE r.name = 'ROLE_ADMIN'))

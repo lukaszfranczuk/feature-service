@@ -1,0 +1,183 @@
+{
+	"info": {
+		"_postman_id": "49c1780d-6fb8-495f-9be9-3279e6b9afc8",
+		"name": "Feature Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2930259"
+	},
+	"item": [
+		{
+			"name": "Features",
+			"item": [
+				{
+					"name": "Create new feature",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if(pm.response.code == 201) {",
+									"    var locationHeader = pm.response.headers.get(\"Location\");",
+									"    var featureId = locationHeader.substring(locationHeader.length-36, locationHeader.length);",
+									"    pm.environment.set(\"LAST_CREATED_FEATURE_ID\", featureId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"feature2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HOST}}/features",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"features"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Features for logged in user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{HOST}}/features",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"features"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Enable feature for a user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"{{NORMAL_USER_GUID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HOST}}/features/{{LAST_CREATED_FEATURE_ID}}/actions/enable",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"features",
+								"{{LAST_CREATED_FEATURE_ID}}",
+								"actions",
+								"enable"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Enable feature globally",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{HOST}}/features/{{LAST_CREATED_FEATURE_ID}}/actions/enable-globally",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"features",
+								"{{LAST_CREATED_FEATURE_ID}}",
+								"actions",
+								"enable-globally"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"AUTH_TOKEN\", pm.response.headers.get(\"Authorization\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{USERNAME}}\",\n    \"password\": \"{{PASSWORD}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/login",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

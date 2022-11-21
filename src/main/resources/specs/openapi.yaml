@@ -1,0 +1,173 @@
+openapi: 3.0.3
+info:
+  title: Features Service
+  version: 1.0.0
+paths:
+  /login:
+    post:
+      summary: Login user
+      description: Login user
+      operationId: loginUser
+      requestBody:
+        description: Login User
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentialsBody'
+      responses:
+        '201':
+          description: New Feature created
+        '401':
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+  /features:
+    post:
+      summary: Add a new feature
+      description: Add a new feature with default to disabled
+      operationId: addNewFeature
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        description: Create a new feature
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeatureBody'
+      responses:
+        '201':
+          description: New Feature created
+        '401':
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '403':
+          description: User doesn't have permission to perform this action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '422':
+          description: Feature with given name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+    get:
+      summary: Finds all features for logged in user
+      operationId: getAllFeaturesForLoggedInUser
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeatureBody'
+        '401':
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+  /features/{id}/actions/enable-globally:
+    post:
+      summary: Globally enable feature with given id
+      operationId: globallyEnableFeature
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          description: ID of the feature that action will be performed on
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Feature enabled
+        '401':
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '403':
+          description: User doesn't have permission to perform this action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+  /features/{id}/actions/enable:
+    post:
+      summary: Enable feature with given id for a user
+      operationId: enableFeatureForAUser
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          description: ID of the feature that action will be performed on
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Enable feature for a user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserFeatureBody'
+      responses:
+        '204':
+          description: Feature enabled
+        '401':
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '403':
+          description: User doesn't have permission to perform this action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+
+components:
+  schemas:
+    UserCredentialsBody:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    FeatureBody:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    UserFeatureBody:
+      type: object
+      properties:
+        userId:
+          type: string
+    ErrorBody:
+      type: object
+      properties:
+        message:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
